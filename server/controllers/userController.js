@@ -2,6 +2,7 @@ import User from "../models/User.js"
 import fs from "fs"
 import imagekit from "../congigs/imageKit.js"
 import Connection from "../models/Connection.js"
+import Post from "../models/Post.js"
 
 
 // get user data using userid 
@@ -281,5 +282,20 @@ export const acceptConnectionRequest = async (req, res) => {
     }
 }
 
-
+// get user profiles 
+export const getUserProfile = async (req, res) => {
+    try {
+        const { profileId } = req.body;
+        const profile = await User.findById(profileId)
+        if(profile){
+            return res.json({success: false, message: "User not found"});
+        }
+        const posts = await Post.find({user: profileId}).populate('user')
+        res.json({success: true, profile, posts})
+    } catch (error) {
+            console.log(error);
+        res.json({success: false, message: error.message})
+        
+    }
+}
 
